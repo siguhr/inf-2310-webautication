@@ -1,8 +1,13 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 import os.path
+# import socket
 
 # Use bcrypt for password handling
 import bcrypt
+
+# server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# server_address = ('localhost', 5001)
+# server_socket.bind(server_address)  
 
 PASSWORDFILE = 'passwords'
 PASSWORDFILEDELIMITER = ":"
@@ -109,4 +114,5 @@ def loggedin():
 if __name__ == '__main__':
 
     # TODO: Add TSL
-    app.run(debug=True, ssl_context=('cert.pem', 'key.pem'))
+    app.run(host='0.0.0.0', port=5001, debug=True, ssl_context=('cert.pem', 'key.pem'))
+
