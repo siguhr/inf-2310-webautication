@@ -114,6 +114,15 @@ def loggedin():
 if __name__ == '__main__':
 
     # TODO: Add TSL
-    app.run(host='10.0.0.8', port=8000, debug=True, ssl_context=('cert.pem', 'key.pem'))
+
+    # Obtain SSL certificate and key pair
+    # ssl_certificate = 'app/src/cert.pem'
+    # ssl_key = 'app/src/key.pem'
+
+    # # Create SSL context
+    # ssl_context = (ssl_certificate, ssl_key)
+
+    app.run(host='0.0.0.0', port=8088, debug=True)
+            # , ssl_context=('cert.pem', 'key.pem'))
 
 
