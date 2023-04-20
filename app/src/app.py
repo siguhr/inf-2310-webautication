@@ -114,6 +114,6 @@ def loggedin():
 if __name__ == '__main__':
 
     # TODO: Add TSL
-    app.run(host='10.0.0.54', port=8000, debug=True, ssl_context=('cert.pem', 'key.pem'))
+    app.run(host='10.0.0.8', port=8000, debug=True, ssl_context=('cert.pem', 'key.pem'))
 
 
