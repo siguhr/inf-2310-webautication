@@ -4,15 +4,19 @@ import ssl
 import bcrypt
 import OpenSSL
 
+# Initialize Flask app
 app = Flask(__name__)
 app.secret_key = b'8852475abf1dcc3c2769f54d0ad64a8b7d9c3a8aa8f35ac4eb7454473a5e454c'
 
+# Define constants
 PASSWORDFILE = 'passwords'
 PASSWORDFILEDELIMITER = ":"
 
+# Create a password file if it doesn't exist
 if not os.path.exists(PASSWORDFILE):
     open(PASSWORDFILE, 'w').close()
 
+# Define the route for the home page
 @app.route('/')
 def home():
     if 'username' in session:
@@ -20,40 +24,59 @@ def home():
     else:
         return render_template('home.html')
 
+# Define the route for the registration page
 @app.route('/register', methods=['GET'])
 def register_get():
     return render_template('register.html')
 
+# Define the route for submitting the registration form
 @app.route('/register', methods=['POST'])
 def register_post():
+    # Get the username and password from the registration form
     username = request.form['username']
     password = request.form['password']
+
+    # If the username or password is empty, flash an error message and redirect back to the registration page
     if not username or not password:
         flash('Please enter a username and password.')
         return redirect(url_for('register_get'))
+    
+    # Hash the password and write it to the password file
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     with open(PASSWORDFILE, 'a') as f:
         f.write(f'{username}{PASSWORDFILEDELIMITER}{hashed_password.decode("utf-8")}\n')
+
+    # Flash a success message and redirect to the login page
     flash('Registration successful! Please log in.')
     return redirect(url_for('login_get'))
 
+# Define the route for the login page
 @app.route('/login', methods=['GET'])
 def login_get():
     return render_template('login.html')
 
+
+# Define the route for submitting the login form
 @app.route('/login', methods=['POST'])
 def login_post():
     username = request.form['username']
     password = request.form['password']
+
+    # Check if the username and password match a record in the password file
     with open(PASSWORDFILE, 'r') as f:
         for line in f:
             stored_username, stored_password = line.strip().split(PASSWORDFILEDELIMITER)
             if username == stored_username and bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+
+                # If the username and password match, store the username in the session and redirect to the logged-in page
                 session['username'] = username
                 return redirect(url_for('loggedin'))
+            
+    # If the username and password don't match, flash an error message and redirect back to the login page
     flash('Incorrect username or password.')
     return redirect(url_for('login_get'))
 
+# Define the route for the logged-in page
 @app.route('/loggedin')
 def loggedin():
     if 'username' in session:
