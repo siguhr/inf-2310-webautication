@@ -20,7 +20,8 @@ if not os.path.exists(PASSWORDFILE):
     open(PASSWORDFILE, 'w').close()
 
 # Define rate limiting and IP blocking
-limiter = Limiter(get_remote_address, app=app, default_limits=["3 per hour"])
+limiter = Limiter(key_func=get_remote_address, app=app, default_limits=["3 per hour"])
+
 
 
 
