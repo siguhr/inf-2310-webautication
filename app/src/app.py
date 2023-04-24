@@ -4,6 +4,9 @@ import ssl
 import bcrypt
 import OpenSSL
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = b'8852475abf1dcc3c2769f54d0ad64a8b7d9c3a8aa8f35ac4eb7454473a5e454c'
@@ -16,8 +19,14 @@ PASSWORDFILEDELIMITER = ":"
 if not os.path.exists(PASSWORDFILE):
     open(PASSWORDFILE, 'w').close()
 
+# Define rate limiting and IP blocking
+limiter = Limiter(get_remote_address, app=app, default_limits=["3 per hour"])
+
+
+
 # Define the route for the home page
 @app.route('/')
+@limiter.limit("5 per minute")
 def home():
     if 'username' in session:
         return render_template('home.html', username=session['username'])
@@ -26,11 +35,13 @@ def home():
 
 # Define the route for the registration page
 @app.route('/register', methods=['GET'])
+@limiter.limit("5 per minute")
 def register_get():
     return render_template('register.html')
 
 # Define the route for submitting the registration form
 @app.route('/register', methods=['POST'])
+@limiter.limit("5 per minute")
 def register_post():
     # Get the username and password from the registration form
     username = request.form['username']
@@ -52,12 +63,14 @@ def register_post():
 
 # Define the route for the login page
 @app.route('/login', methods=['GET'])
+@limiter.limit("5 per minute")
 def login_get():
     return render_template('login.html')
 
 
 # Define the route for submitting the login form
 @app.route('/login', methods=['POST'])
+@limiter.limit("5 per minute")
 def login_post():
     username = request.form['username']
     password = request.form['password']
@@ -78,6 +91,7 @@ def login_post():
 
 # Define the route for the logged-in page
 @app.route('/loggedin')
+@limiter.limit("5 per minute")
 def loggedin():
     if 'username' in session:
         return render_template('loggedin.html', username=session['username'])
