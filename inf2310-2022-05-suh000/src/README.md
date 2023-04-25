@@ -15,7 +15,7 @@ Install flask
 Enter server: ssh ubuntu@suh000.csano.no
 Password: suh000123
 
-Navigate  to ~/webautication/inf2310-2022-05-suh000/src 
+Navigate  to ~/webautication/app/src 
 Runserver: python3 app.py
 Enter PEM pass phrase: pass
 
