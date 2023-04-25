@@ -7,51 +7,51 @@ import OpenSSL
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-# Initialize Flask app
+# initialize Flask app
 app = Flask(__name__)
 app.secret_key = b'8852475abf1dcc3c2769f54d0ad64a8b7d9c3a8aa8f35ac4eb7454473a5e454c'
 
-# Define constants
+# define constants
 
 PASSWORDFILE = 'passwords'
 PASSWORDFILEDELIMITER = ":"
 
-# Create a password file if it doesn't exist
+# create a password file if it doesn't exist
 if not os.path.exists(PASSWORDFILE):
     open(PASSWORDFILE, 'w').close()
 
-# Define rate limiting and IP blocking
+# define rate limiting and IP blocking
 limiter = Limiter(key_func=get_remote_address, app=app, default_limits=["10 per hour"])
  
 
 
 
-# Define the route for the home page
+# define the route for the home page
 @app.route('/')
 @limiter.limit("3 per minute")
 def home():
-    # If the user is logged in, render the home page with the username
+    # if the user is logged in, render the home page with the username
     if 'username' in session:
         return render_template('home.html', username=session['username'])
     else:
         return render_template('home.html')
 
-# Define the route for the registration page
+# define the route for the registration page
 @app.route('/register', methods=['GET'])
 @limiter.limit("3 per minute")
 def register_get():
     return render_template('register.html')
 
-# Define the route for submitting the registration form
+# define the route for submitting the registration form
 @app.route('/register', methods=['POST'])
 @limiter.limit("3 per minute")
 def register_post():
-    # Get the username and password from the registration form
+    # get the username and password from the registration form
 
     username = request.form['username'] # 
     password = request.form['password']
 
-    # If the username or password is empty, flash an error message and redirect back to the registration page
+    # if the username or password is empty, flash an error message and redirect back to the registration page
     if not username or not password:
         flash('Please enter a username and password.')
         return redirect(url_for('register_get'))
@@ -63,50 +63,41 @@ def register_post():
     with open(PASSWORDFILE, 'a') as f:
         f.write(f'{username}{PASSWORDFILEDELIMITER}{hashed_password.decode("utf-8")}\n') 
 
-    # Flash a success message and redirect to the login page
+    # flash a success message and redirect to the login page
     flash('Registration successful! Please log in.')
     return redirect(url_for('login_get')) 
 
-# Define the route for the login page
+# define the route for the login page
 @app.route('/login', methods=['GET'])
 @limiter.limit("3 per minute")
 def login_get():
     return render_template('login.html')
 
 
-# Define the route for submitting the login form
+# define the route for submitting the login form
 @app.route('/login', methods=['POST'])
 @limiter.limit("3 per minute")
 def login_post():
-    # Get the username and password from the login form
+    # get the username and password from the login form
     username = request.form['username']
     password = request.form['password']
 
-    # Check if the username and password match a record in the password file
-    # with open(PASSWORDFILE, 'r') as f:
-    #     for line in f:
-    #         stored_username, stored_password = line.strip().split(PASSWORDFILEDELIMITER) 
-            
-    #         if username == stored_username and bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
 
-    #             # If the username and password match, store the username in the session and redirect to the logged-in page
-    #             session['username'] = username
-    #             return redirect(url_for('loggedin'))
 
-    # Check if the username and password match a record in the password file
+    # check if the username and password match a record in the password file
     with open(PASSWORDFILE, 'r') as f:
         for line in f:
-            line = line.strip()
+            line = line.strip() # remove whitespace
             if not line:
                 continue
             stored_username, stored_password = line.split(PASSWORDFILEDELIMITER)
             if username == stored_username and bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
-                # If the username and password match, store the username in the session and redirect to the logged-in page
+                # if the username and password match, store the username in the session and redirect to the logged-in page
                 session['username'] = username
                 return redirect(url_for('loggedin'))
 
             
-    # If the username and password dont match, flash an error message and redirect back to the login page
+    # if the username and password dont match, flash an error message and redirect back to the login page
     flash('Incorrect username or password.')
     return redirect(url_for('login_get'))
 
@@ -131,5 +122,5 @@ if __name__ == '__main__':
 
     # create an SSLContext object using the certificate and private key
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2) # specify the protocol TLSv1.2 also known as TLS 1.2 and HTTPS
-    ssl_context.load_cert_chain(certfile=cert_path, keyfile=key_path) #specify the certificate and private key
+    ssl_context.load_cert_chain(certfile=cert_path, keyfile=key_path) # specify the certificate and private key
     app.run(host='0.0.0.0', port=8087, debug=True, ssl_context=ssl_context)
