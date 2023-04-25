@@ -24,8 +24,6 @@ if not os.path.exists(PASSWORDFILE):
 limiter = Limiter(key_func=get_remote_address, app=app, default_limits=["10 per hour"])
  
 
-
-
 # define the route for the home page
 @app.route('/')
 @limiter.limit("3 per minute")
@@ -56,7 +54,6 @@ def register_post():
         flash('Please enter a username and password.')
         return redirect(url_for('register_get'))
     
-   
             
     # salted and hashed password and write it to the password file
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -81,7 +78,6 @@ def login_post():
     # get the username and password from the login form
     username = request.form['username']
     password = request.form['password']
-
 
 
     # check if the username and password match a record in the password file
