@@ -32,7 +32,7 @@ limiter = Limiter(key_func=get_remote_address, app=app, default_limits=["10 per 
 def home():
     # if the user is logged in, render the home page with the username
     if 'username' in session:
-        return render_template('home.html', username=session['username'])
+        return render_template('home.html', username=session['username']) # server identifies the user by the session cookie
     else:
         return render_template('home.html')
 
