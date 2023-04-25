@@ -19,7 +19,7 @@ Navigate  to ~/webautication/app/src
 Runserver: python3 app.py
 Enter PEM pass phrase: pass
 
-Run csano VM at: https://51.144.238.0:8088/
+Run csano VM at: https://51.144.238.0:8087/
 
 # Find VM ip
 Run curl https://ipinfo.io/ip
