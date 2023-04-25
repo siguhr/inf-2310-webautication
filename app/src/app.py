@@ -16,7 +16,7 @@ app.secret_key = b'8852475abf1dcc3c2769f54d0ad64a8b7d9c3a8aa8f35ac4eb7454473a5e4
 PASSWORDFILE = 'passwords'
 PASSWORDFILEDELIMITER = ":"
 
-# create a password file if it doesn't exist
+# create a password file 
 if not os.path.exists(PASSWORDFILE):
     open(PASSWORDFILE, 'w').close()
 
